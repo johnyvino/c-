@@ -1801,12 +1801,17 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
    ───────────────────────────────────────────────────────────── */
 @media (hover: none) {
   .detail-close { width: 44px; height: 44px; top: 12px; right: 12px; }
-  /* Touch devices: drop the most expensive compositing layers. iOS Safari
-     budgets GPU+image memory tightly; the detail-backdrop and poster-glow
-     each force a full-viewport offscreen pass, and AnimatePresence keeps
-     both the closing and opening modal alive briefly — doubling the cost
-     and frequently tripping a tab-kill ("the page reloaded itself"). */
-  .detail-backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(0,0,0,0.78); }
+  /* Touch devices: kill ALL backdrop-filter passes. iOS WebKit 18.x has been
+     terminating the WebContent process when many backdrop-filter layers are
+     allocated/freed in succession (modal open + close), and we'd already
+     stripped the most expensive ones — but evidently not enough. Set a
+     blanket override; the visual cost is solid translucent surfaces instead
+     of frosted ones, but the tab survives. */
+  *, *::before, *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .detail-backdrop { background: rgba(0,0,0,0.78); }
   .detail-poster-glow { display: none; }
   .search-clear {
     width: 32px;

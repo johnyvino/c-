@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
+// Skip the entire photo strip on touch devices. Each photo allocates a
+// background-image compositor layer that iOS WebKit 18.x has been treating
+// as expensive enough to terminate the WebContent process when several stack
+// up across a modal open+close cycle. The poster + meta block are enough on
+// a phone screen anyway.
+const IS_TOUCH = typeof window !== 'undefined'
+  && window.matchMedia?.('(hover: none), (pointer: coarse)').matches;
+
 // A horizontal strip of still photos (TMDB backdrops, etc.) with a click-to-open
 // lightbox and arrow-key navigation. Pure-image variant of GameMedia — no video
 // affordances and no per-item thumbnail differentiation.
@@ -23,6 +31,8 @@ export const PhotoStrip = ({ photos, loading = false, skeletonCount = 6 }) => {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [lightboxIdx, photos?.length]);
+
+  if (IS_TOUCH) return null;
 
   const showingSkeletons = !photos?.length && loading;
   if (!photos?.length && !loading) return null;

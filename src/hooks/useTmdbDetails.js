@@ -3,6 +3,9 @@ import { TMDB_API_KEY, TMDB_BASE } from '../lib/tmdbKey';
 import { pickWatchRegion, dedupeProviders, mergeWatchmodeIntoProviders } from '../lib/tmdb';
 import { fetchWatchmodeSources, WATCHMODE_TYPE_PRIORITY } from '../lib/watchmode';
 
+const IS_TOUCH = typeof window !== 'undefined'
+  && window.matchMedia?.('(hover: none), (pointer: coarse)').matches;
+
 const EMPTY = {
   providers: [],
   director: null,
@@ -68,7 +71,7 @@ export const useTmdbDetails = (movie) => {
         ? Math.round(d.vote_average * 10)
         : null;
 
-      const photos = pickDiversePhotos(d.images?.backdrops || [], 4);
+      const photos = IS_TOUCH ? [] : pickDiversePhotos(d.images?.backdrops || [], 4);
 
       setData({ providers, director, cast, runtime, genres, score, photos });
       setLoading(false);
