@@ -58,7 +58,7 @@ const tmdbToEntry = (d, ourType) => {
   };
 };
 
-const rawgToEntry = (d) => {
+const rawgToEntry = (d, screenshots = [], videos = []) => {
   const year = d.released ? parseInt(d.released.slice(0, 4), 10) : null;
   const slug = d.slug || slugify(`${d.name}-${year ?? ''}`);
   return {
@@ -79,6 +79,30 @@ const rawgToEntry = (d) => {
     popularity: d.added || 0,
     tmdbId: null,
     detailsUrl: `https://rawg.io/games/${slug}`,
+    website: d.website || null,
+    rawgId: d.id || null,
+    rawgSlug: d.slug || null,
+    // Match the schema of games already in the catalog so the DetailModal
+    // can render dev/publisher/metacritic/ESRB/playtime/stores/platforms.
+    developers: (d.developers || []).map((x) => x.name),
+    publishers: (d.publishers || []).map((x) => x.name),
+    metacritic: d.metacritic ?? null,
+    esrbRating: d.esrb_rating ? { name: d.esrb_rating.name, slug: d.esrb_rating.slug } : null,
+    playtime: d.playtime || null,
+    platforms: (d.platforms || []).map((p) => ({
+      slug: p.platform?.slug,
+      name: p.platform?.name,
+    })).filter((p) => p.slug),
+    stores: (d.stores || []).map((s) => ({
+      slug: s.store?.slug,
+      name: s.store?.name,
+      domain: s.store?.domain,
+      url: s.url || (s.store ? `https://rawg.io/games/${slug}` : null),
+    })).filter((s) => s.slug),
+    screenshots: screenshots.map((s) => s.image).filter(Boolean),
+    videos: videos
+      .filter((v) => v.data?.['480'] || v.data?.max)
+      .map((v) => ({ low: v.data?.['480'] || null, high: v.data?.max || null })),
     twist: false, scary: false, intense: false, mindbending: false, clever: false,
     _isNew: true,
   };
@@ -196,11 +220,29 @@ export const AddModal = ({ onClose, onAdded, defaultType = 'movie', apiKeys, ope
     setGamePicking(true);
     setStatus({ ok: null, msg: 'Fetching…' });
     try {
-      const url = new URL(`${RAWG_BASE}/games/${slugOrId}`);
-      url.searchParams.set('key', rawgKey);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`RAWG ${res.status}`);
-      const entry = rawgToEntry(await res.json());
+      // Fetch the game detail + screenshots + videos in parallel so the
+      // entry that lands in movies.json carries the same schema as games
+      // already in the catalog (devs, publishers, metacritic, screenshots,
+      // platforms, etc.). Screenshots/videos failures are non-fatal —
+      // they just leave those fields empty.
+      const detailUrl = new URL(`${RAWG_BASE}/games/${slugOrId}`);
+      detailUrl.searchParams.set('key', rawgKey);
+      const shotsUrl = new URL(`${RAWG_BASE}/games/${slugOrId}/screenshots`);
+      shotsUrl.searchParams.set('key', rawgKey);
+      const moviesUrl = new URL(`${RAWG_BASE}/games/${slugOrId}/movies`);
+      moviesUrl.searchParams.set('key', rawgKey);
+
+      const [detailRes, shotsRes, moviesRes] = await Promise.all([
+        fetch(detailUrl),
+        fetch(shotsUrl).catch(() => null),
+        fetch(moviesUrl).catch(() => null),
+      ]);
+      if (!detailRes.ok) throw new Error(`RAWG ${detailRes.status}`);
+      const detail = await detailRes.json();
+      const shots = shotsRes?.ok ? (await shotsRes.json()).results || [] : [];
+      const videos = moviesRes?.ok ? (await moviesRes.json()).results || [] : [];
+
+      const entry = rawgToEntry(detail, shots, videos);
       onAdded(entry);
       setStatus({ ok: true, msg: `Added: ${entry.title}${entry.year ? ` (${entry.year})` : ''}` });
       setGameQuery('');
