@@ -1813,6 +1813,17 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
   }
   .detail-backdrop { background: rgba(0,0,0,0.78); }
   .detail-poster-glow { display: none; }
+  /* And kill the per-card GPU compositing layers. Every MovieCard had
+     transform-style:preserve-3d + will-change:transform to power the desktop
+     mouse-tilt — but tilt is disabled on touch (see IS_TOUCH guard in
+     MovieCard), so those properties allocate ~230 unused GPU layers and
+     blow through iOS's GPU memory budget the moment a modal also wants a
+     layer. Demote them on touch. */
+  .movie-card-inner {
+    transform-style: flat !important;
+    will-change: auto !important;
+  }
+  .movie-card { will-change: auto !important; }
   .search-clear {
     width: 32px;
     height: 32px;
