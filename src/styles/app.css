@@ -1,0 +1,1820 @@
+/* ───── Layout ───── */
+.app-container { width: 100%; }
+
+.hero-banner {
+  position: relative;
+  width: 100%;
+  /* Edge-to-edge: no max-width, gradient fills the full viewport width.
+     Padding lives on the inner wrap so it matches the grid below exactly. */
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(180deg, #000000 0%, #0d0d0d 55%, var(--canvas) 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* Inner hero content uses identical max-width + horizontal padding as .layout
+   below, so the title's left edge lines up with the leftmost poster. */
+.hero-content-wrap {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-7) 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.header-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  width: 100%;
+}
+.hero-recommend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--ink);
+  color: var(--canvas);
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.hero-recommend-btn:hover { background: #f0f0f0; transform: translateY(-1px); }
+.hero-recommend-label { display: inline; }
+.hero-recommend-label-mobile { display: none; }
+
+/* Mobile/tablet: keep button on the right of the title; tighten the rest. */
+@media (max-width: 900px) {
+  .hero-content-wrap { padding: var(--space-6) var(--space-4) 0; }
+  .header-content h1 { margin-bottom: 8px; min-width: 0; }
+  .hero-blurb { margin: 0 0 var(--space-6); max-width: none; }
+  .header-top-row { align-items: center; gap: var(--space-3); }
+  .hero-recommend-label-desktop { display: none; }
+  .hero-recommend-label-mobile { display: inline; }
+  .header-tabs { display: flex; width: 100%; }
+  .header-tab { flex: 1; min-width: 0; }
+  .header-tab-content { justify-content: center; }
+}
+@media (max-width: 640px) {
+  .hero-content-wrap { padding: var(--space-6) var(--space-4) 0; }
+  .header-content h1 { font-size: 1.6rem; line-height: 1.05; }
+  .hero-recommend-btn { padding: 8px 14px; font-size: 0.78rem; flex-shrink: 0; }
+  .hero-blurb { font-size: 0.85rem; margin-bottom: var(--space-6); }
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: var(--space-6);
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 24px var(--space-4) var(--space-9) var(--space-7);
+  align-items: start;
+}
+
+.type-count {
+  font-size: 0.65rem;
+  font-weight: 500;
+  opacity: 0.55;
+  margin-left: 1px;
+}
+
+/* ───── Header ───── */
+.header-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+.header-content h1 {
+  font-family: 'Anton', 'Anton-fallback', 'Bebas Neue', Impact, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  margin-bottom: 6px;
+  color: var(--ink);
+  text-rendering: optimizeLegibility;
+}
+.hero-title {
+  /* h1 sizing & color come from inherited h1 styles above */
+  display: inline-block;
+}
+.hero-title-anim {
+  display: inline-block;
+  position: relative;
+  padding-bottom: 10px;
+}
+.hero-title-anim::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: rgba(var(--accent-hot-rgb), 0.95);
+  border-radius: 2px;
+}
+.brand-link {
+  color: var(--primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: inline-block;
+}
+.title-tail {
+  display: inline-block;
+}
+/* Per-letter span inside the animated title, inflates with motion library on
+   mount and on hover. inline-block so transforms apply, transform-origin at
+   the bottom so the inflate reads as bouncing up off the redline. */
+.brand-letter {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform;
+  white-space: pre;
+}
+.brand-link:hover,
+.brand-link:focus-visible {
+  color: rgba(var(--accent-hot-rgb), 1);
+}
+.hero-blurb {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--muted-soft);
+  font-weight: 400;
+  letter-spacing: 0;
+  margin: 0 0 32px;
+  max-width: 540px;
+}
+@media (max-width: 640px) {
+  .hero-blurb { font-size: 0.88rem; }
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT: header-tabs (Movies / Shows under title)
+   Liquid-glass segmented control with sliding white pill.
+   ───────────────────────────────────────────── */
+.header-tabs {
+  display: inline-flex;
+  background: var(--canvas-elevated);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  padding: 4px;
+  gap: 2px;
+}
+.header-tab {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+.header-tab:hover { color: var(--ink); }
+.header-tab.active { color: var(--on-primary); }
+.header-tab-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--primary);
+  border-radius: var(--r-pill);
+  box-shadow: 0 4px 14px rgba(218, 41, 28, 0.30);
+  z-index: 1;
+}
+.header-tab-content {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.header-tab .type-count {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.55;
+  margin-left: 2px;
+  letter-spacing: 0.04em;
+}
+.header-tab.active .type-count { opacity: 0.85; }
+.header-content p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.95rem;
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT: sidebar (same glass surface as tabs)
+   ───────────────────────────────────────────── */
+.glass-sidebar { position: sticky; top: var(--space-6); min-width: 0; }
+.sidebar-inner {
+  /* Recede into the page — transparent, no border, no card surface. */
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  /* `overflow-y: auto` below also clips the x-axis (CSS spec — when one axis
+     is non-visible, the other is forced to clip too). The horizontal inset
+     gives chip hover-scale + the search-input focus ring room to grow without
+     getting cut off at the leftmost chip in each row. */
+  padding: var(--space-4) 12px;
+  box-shadow: none;
+  max-height: calc(100vh - var(--space-9));
+  max-height: calc(100dvh - var(--space-9));
+  overflow-y: auto;
+  position: relative;
+  min-width: 0;
+}
+
+.clear-link.floating {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-5);
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+  z-index: 2;
+}
+.clear-link.floating:hover { color: #fff; }
+
+.filter-section.clear-section {
+  border-bottom: none;
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-1);
+}
+.clear-all-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: var(--pill-blur);
+  -webkit-backdrop-filter: var(--pill-blur);
+}
+.clear-all-btn:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+.filter-section {
+  padding: var(--space-4) 0;
+  border-bottom: none;
+}
+.filter-section.first { padding-top: 0; }
+.filter-section:last-child { border-bottom: none; padding-bottom: var(--space-2); }
+
+.filter-label {
+  font-family: var(--font-sans);
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.filter-value {
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: 0.78rem;
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT: glass pill (chips + rating badge)
+   Same surface, different sizes only.
+   ───────────────────────────────────────────── */
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.glass-chip,
+.rating-badge {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-sans);
+  border-radius: var(--r-pill);
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+.glass-chip {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 5px var(--space-4);
+  cursor: pointer;
+  letter-spacing: 0;
+}
+.glass-chip:hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.22);
+  color: var(--ink);
+}
+.glass-chip.active {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(218, 41, 28, 0.30);
+}
+.glass-chip:focus-visible,
+.search-clear:focus-visible,
+.sheet-clear:focus-visible,
+.sheet-apply:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.8);
+  outline-offset: 2px;
+}
+.glass-chip .chip-icon {
+  display: inline-block;
+  vertical-align: -1px;
+  margin-right: 5px;
+}
+
+/* ───── Search input ───── */
+.glass-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: var(--r-pill);
+  padding: var(--space-3) var(--space-5);
+  box-shadow: 0 0 0 0 rgba(218, 41, 28, 0);
+  transition: background 0.22s ease, border-color 0.22s ease,
+    box-shadow 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.glass-search:focus-within {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(218, 41, 28, 0.55);
+  box-shadow: 0 0 0 4px rgba(218, 41, 28, 0.18);
+}
+.glass-search svg { color: rgba(255,255,255,0.55); flex-shrink: 0; }
+.glass-search input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  min-width: 0;
+}
+.glass-search input::placeholder { color: rgba(255,255,255,0.55); }
+.search-clear {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  border-radius: var(--r-pill);
+  width: 18px; height: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.6);
+  padding: 0;
+}
+.search-clear:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+/* ───── Tier slider (Johnyvino Score) ───── */
+.tier-slider {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--r-pill);
+  padding: 3px;
+  gap: 0;
+  min-width: 0;
+}
+.tier-stop {
+  flex: 1 1 0;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 7px 2px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-out);
+  white-space: nowrap;
+  overflow: visible;
+  text-align: center;
+}
+.tier-stop:hover { color: #fff; }
+.tier-stop.active {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 4px 14px rgba(218, 41, 28, 0.30);
+}
+
+/* ───── Grid & cards ───── */
+.main-content { min-width: 0; }
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-7);
+}
+@media (max-width: 1200px) {
+  .movie-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .movie-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Games tab: 3 columns at all sizes above phone — wider 16:9 poster needs more room. */
+.movie-grid.games-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 640px) {
+  .movie-grid.games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.movie-card-wrap { display: contents; }
+
+.movie-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  position: relative;
+  /* `perspective` lets the inner card receive a real 3D tilt on hover —
+     `.movie-card-inner` rotates on rotateX/rotateY (driven by Motion). Without
+     a perspective ancestor the rotation collapses to a flat skew. */
+  perspective: 900px;
+  /* Hover lift + scale is driven by Motion's whileHover (see MovieCard.jsx).
+     CSS would be overridden by Motion's inline transform, so the only thing
+     left here is the descendant effects (shadow, etc.) that don't conflict. */
+}
+.movie-card-inner {
+  display: flex;
+  flex-direction: column;
+  /* Allow children to participate in the parent's 3D space. Without this the
+     poster's tilt has no depth — the badge wouldn't feel like it sits in front. */
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.movie-card .poster-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 22px 56px rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) ease;
+}
+.movie-card:hover .poster-container::after { opacity: 1; }
+.movie-card:hover .poster-container img { transform: scale(1.04); }
+
+.poster-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  transition: transform var(--duration-slow) var(--ease-bounce), box-shadow var(--duration-base) ease;
+}
+.poster-container.horizontal { aspect-ratio: 16 / 9; }
+.poster-hover-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.poster-hover-video.playing { opacity: 1; }
+/* Stacked screenshot frames that cycle through on hover (RAWG-style).
+   True crossfade dissolve: incoming and outgoing transition simultaneously,
+   both visible at ~0.5 opacity at the midpoint. Blur+scale during the
+   transition gives it a cinematic feel.
+   Selector includes `img` to outweigh `.poster-container img`'s default
+   transform-only transition. */
+img.poster-shot-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--duration-base) ease-in-out;
+  pointer-events: none;
+  will-change: opacity;
+}
+img.poster-shot-frame.show {
+  opacity: 1;
+}
+
+/* Initial dissolve-in for the base poster image when the card first paints. */
+@keyframes poster-dissolve-in {
+  from { opacity: 0; filter: blur(20px) saturate(1.2); transform: scale(1.04); }
+  to   { opacity: 1; filter: blur(0) saturate(1);     transform: scale(1); }
+}
+.poster-container img.poster-img {
+  animation: poster-dissolve-in 0.5s ease-out both;
+}
+.poster-shot-dots {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity var(--duration-fast) ease;
+  pointer-events: none;
+}
+.movie-card:hover .poster-shot-dots { opacity: 0.7; }
+.shot-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transition: background var(--duration-fast) ease, transform var(--duration-fast) ease;
+}
+.shot-dot.active {
+  background: rgba(255, 255, 255, 0.85);
+  transform: scale(1.2);
+}
+.poster-play-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 3;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  pointer-events: none;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  transition: background 0.18s ease;
+}
+.poster-play-badge.is-muted {
+  background: rgba(0,0,0,0.7);
+}
+.poster-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Spring overshoot on the inner image too, so the scale-up settles into
+     place instead of stopping flat. */
+  transition: transform 0.42s var(--ease-bounce);
+  will-change: auto;
+}
+.poster-img {
+  /* Show as soon as the browser has bytes — no JS-driven fade. */
+  opacity: 1;
+}
+.poster-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: var(--space-6);
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  color: var(--text-secondary);
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT: rating badge (top-right of poster)
+   Small, monochrome, neutral glass — never tints the poster art.
+   ───────────────────────────────────────────── */
+.rating-badge {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  z-index: 3;
+  pointer-events: none;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.95);
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+}
+/* Tiers share a neutral look; Amazing gets the Rosso Corsa accent so
+   top-tier titles still pop without needing a sticker badge. */
+.rating-badge.tier-great,
+.rating-badge.tier-good {
+  background: rgba(0,0,0,0.55);
+  border-color: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.95);
+}
+.rating-badge.tier-amazing {
+  background: rgba(218, 41, 28, 0.92);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(218, 41, 28, 0.45);
+  /* Diagonal sheen sweep — pure CSS, GPU-accelerated translate. Long pause
+     between sweeps so it reads as polish, not a marquee. Children get
+     position: relative so they stack above the ::before sheen. */
+  position: absolute;
+  overflow: hidden;
+  isolation: isolate;
+}
+.rating-badge.tier-amazing > * { position: relative; z-index: 1; }
+.rating-badge.tier-amazing::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(115deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 65%);
+  transform: translateX(-120%);
+  animation: tierSheen 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes tierSheen {
+  0%, 28%   { transform: translateX(-120%); }
+  60%, 100% { transform: translateX(120%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rating-badge.tier-amazing::before { animation: none; }
+}
+/* Pause the sheen sweep while any modal is open — the backdrop's blur
+   otherwise smears the red sweep across the screen and looks like something
+   flying through the background. */
+body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: paused; }
+.rating-badge .badge-dot { display: none; }
+
+/* ─────────────────────────────────────────────
+   STICKER BADGES (PNG illustrations)
+   Tiny corner stickers that pop just above the poster edge.
+   - Amazing: top-right
+   - Twist:   top-left
+   ───────────────────────────────────────────── */
+.poster-badge {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 5px 10px rgba(0,0,0,0.55));
+  transition: transform 0.25s var(--ease-out);
+}
+.badge-amazing {
+  top: -30px;
+  right: -24px;
+  transform: rotate(10deg);
+}
+.badge-twist {
+  top: -27px;
+  left: -24px;
+  transform: rotate(-10deg);
+}
+/* Solo Twist (no Amazing on poster) → take the right corner instead */
+.badge-twist-solo {
+  top: -27px;
+  right: -24px;
+  transform: rotate(10deg);
+}
+.movie-card:hover .badge-amazing      { transform: rotate(10deg) scale(1.15); }
+.movie-card:hover .badge-twist        { transform: rotate(-10deg) scale(1.15); }
+.movie-card:hover .badge-twist-solo   { transform: rotate(10deg) scale(1.15); }
+
+/* Card & inner must allow the badge to spill outside the poster bounds. */
+.movie-card { overflow: visible; }
+.movie-card-inner { overflow: visible; position: relative; }
+
+/* Hover overlay still shows genres but rating is now permanent on the badge.
+   The mask makes the blur fade from clear at the top to full blur at the
+   bottom, instead of being a solid black wash. A faint dark gradient on top
+   keeps the notes readable without dimming the poster. */
+.poster-overlay {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 60%);
+  mask-image: linear-gradient(to top, black 30%, transparent 60%);
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
+  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 35%, rgba(0,0,0,0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  gap: 8px;
+  padding: var(--space-4);
+}
+.movie-card:hover .poster-overlay { opacity: 1; }
+/* Games use a hover screenshot cycle instead — overlay would conflict. */
+.game-card .poster-overlay { display: none; }
+
+.poster-notes {
+  color: rgba(255,255,255,0.95);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.movie-info {
+  padding: var(--space-4) var(--space-1) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--space-2);
+}
+.movie-title {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink);
+  line-height: 1.2;
+  min-width: 0;
+}
+.copy-title-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--muted-soft);
+  padding: 4px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.18s ease, color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+.movie-card:hover .copy-title-btn,
+.copy-title-btn:focus-visible { opacity: 1; }
+.copy-title-btn:hover { color: var(--ink); background: var(--pill-bg); }
+.copy-title-btn.copied { color: #4ade80; opacity: 1; transform: scale(1.05); }
+.movie-year {
+  font-family: var(--font-sans);
+  color: var(--muted-soft);
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.2;
+  grid-column: 1 / -1;
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--space-9) var(--space-6);
+  color: var(--text-secondary);
+}
+
+/* ───── Random-pick flash ───── */
+@keyframes flashPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+  30%      { box-shadow: 0 0 0 8px rgba(255,255,255,0.45); }
+  70%      { box-shadow: 0 0 0 16px rgba(255,255,255,0); }
+}
+.movie-card-wrap.flash .poster-container {
+  animation: flashPulse 1.4s ease-out;
+  outline: 2px solid #fff;
+  outline-offset: var(--space-1);
+  border-radius: var(--r-card);
+}
+
+/* ───── Mobile: sidebar → bottom sheet ───── */
+.mobile-filter-fab { display: none; }
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: var(--space-5);
+  }
+  /* Hide the inline sidebar only — NOT the copy inside .sheet */
+  .layout > .glass-sidebar { display: none; }
+  .mobile-filter-fab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: calc(env(safe-area-inset-left, 0) + 16px);
+    bottom: calc(env(safe-area-inset-bottom, 0) + 16px);
+    width: 52px;
+    height: 52px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 50%;
+    padding: 0;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+    cursor: pointer;
+    z-index: 50;
+    backdrop-filter: blur(28px) saturate(200%);
+    -webkit-backdrop-filter: blur(28px) saturate(200%);
+    transition: transform 0.15s ease;
+  }
+  .mobile-filter-fab:hover { transform: translateY(-1px); }
+  .mobile-filter-fab.has-active::after {
+    content: '';
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 2px solid #ffffff;
+  }
+  /* Copy button always visible on touch — no hover state on touch devices. */
+  .copy-title-btn { opacity: 0.7; }
+  .movie-grid { gap: 20px; }
+}
+
+/* Phones — 2 columns, tighter gap but with room for badges */
+@media (max-width: 640px) {
+  .movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 18px;
+    row-gap: 26px;
+  }
+  .layout { padding: 16px 12px 90px; }
+  .header-tab { padding: 10px 14px; font-size: 0.7rem; }
+  .header-tabs { display: flex; width: 100%; }
+  .header-tab { flex: 1; min-width: 0; }
+  .header-tab-content { justify-content: center; }
+  .type-count { font-size: 0.62rem; }
+  .movie-title { font-size: 0.85rem; }
+  .movie-year { font-size: 0.7rem; }
+  .rating-badge { font-size: 0.55rem; padding: 2px 6px; }
+  .poster-badge { width: 96px; height: 96px; }
+  /* Pull badges inward so they sit on the poster, not in the next card */
+  .badge-amazing { top: -21px; right: -18px; }
+  .badge-twist { top: -21px; left: -18px; }
+  .badge-twist-solo { top: -21px; right: -18px; }
+}
+@media (max-width: 380px) {
+  .header-tab { padding: 8px 10px; }
+  .type-count { display: none; }
+  .movie-grid { column-gap: 14px; row-gap: 22px; }
+}
+
+.sheet-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 100;
+}
+.sheet {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  max-height: 88vh;
+  background: rgba(20,20,22,0.92);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  border-radius: var(--r-card) var(--r-card) 0 0;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0) + 12px);
+}
+.sheet-handle {
+  width: 44px; height: 5px;
+  background: rgba(255,255,255,0.25);
+  border-radius: var(--r-pill);
+  margin: 10px auto 4px;
+  flex-shrink: 0;
+}
+.sheet-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 8px var(--space-4) 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  background: linear-gradient(180deg, rgba(20,20,22,0.96) 0%, rgba(20,20,22,0.88) 100%);
+  z-index: 1;
+}
+.sheet-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-align: center;
+}
+.sheet-clear {
+  justify-self: start;
+  background: var(--pill-bg);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: var(--r-pill);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  cursor: pointer;
+  min-height: 36px;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+.sheet-clear:not(:disabled):hover {
+  background: rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.22);
+}
+.sheet-clear:not(:disabled):active { background: rgba(255,255,255,0.14); }
+.sheet-clear:disabled { opacity: 0.35; cursor: default; }
+.sheet-apply {
+  justify-self: end;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: none;
+  border-radius: var(--r-pill);
+  padding: 8px 18px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  min-height: 36px;
+  box-shadow: var(--active-shadow);
+}
+.sheet-apply:active { background: var(--primary-active); }
+.sheet .glass-sidebar { position: static; }
+.sheet .sidebar-inner {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  max-height: none;
+  padding: 0 var(--space-4) 32px;
+  overflow-y: auto;
+  flex: 1;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+/* Bigger chip + score buttons inside the mobile sheet */
+.sheet .glass-chip { padding: 10px 16px; font-size: 0.85rem; min-height: 40px; }
+.sheet .tier-stop { padding: 12px 8px; font-size: 0.85rem; min-height: 44px; }
+.sheet .glass-search {
+  min-height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.sheet .glass-search input { font-size: 16px; }  /* Stop iOS auto-zoom on focus */
+.sheet .filter-label { font-size: 0.72rem; margin-bottom: 12px; }
+.sheet .filter-section { padding: 14px 0; }
+.sheet .filter-section.first { padding-top: 14px; }
+
+/* ───── Footer ───── */
+.site-footer {
+  margin-top: auto;
+  padding: var(--space-9) var(--space-7) var(--space-7);
+  border-top: 1px solid var(--hairline-soft);
+  background: var(--canvas);
+}
+.site-footer-inner {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+.footer-row { display: flex; flex-direction: column; gap: var(--space-3); }
+.footer-row.credits {
+  align-items: center;
+  text-align: center;
+  color: var(--muted-soft);
+  font-size: 0.84rem;
+}
+.footer-row.credits p { color: var(--muted-soft); }
+.footer-row.credits a {
+  color: var(--body);
+  text-decoration: underline;
+  text-decoration-color: rgba(255,255,255,0.18);
+  text-underline-offset: 3px;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+.footer-row.credits a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--ink);
+}
+.footer-author {
+  color: var(--ink) !important;
+  font-weight: 600;
+  text-decoration-color: rgba(var(--accent-hot-rgb), 0.85) !important;
+}
+.footer-author:hover { text-decoration-color: rgba(var(--accent-hot-rgb), 1) !important; }
+.credits-line {
+  max-width: 640px;
+  line-height: 1.5;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .site-footer {
+    padding: var(--space-7) 16px calc(env(safe-area-inset-bottom, 0) + 32px);
+  }
+}
+
+/* ───── Submit modal ───── */
+.submit-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+}
+.submit-center-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 210;
+  padding: 16px;
+  pointer-events: none;
+}
+.submit-center-wrap > * { pointer-events: auto; }
+
+.submit-modal {
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  background: rgba(24, 24, 26, 0.98);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.submit-modal.tiny {
+  max-width: 380px;
+  padding: 16px;
+  gap: 10px;
+}
+.submit-head { display: flex; justify-content: space-between; align-items: center; }
+.submit-head h2 { color: var(--ink); font-size: 1rem; font-weight: 600; letter-spacing: -0.005em; }
+.submit-modal.tiny .submit-head h2 { font-size: 0.95rem; }
+.submit-helper {
+  color: var(--muted-soft);
+  font-size: 0.78rem;
+  line-height: 1.4;
+  margin: -4px 0 2px;
+}
+.submit-error {
+  color: #ff9a9a;
+  font-size: 0.8rem;
+  margin: -2px 0;
+}
+.submit-close {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--body); padding: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.submit-close:hover { color: var(--ink); }
+.submit-hint {
+  color: var(--body);
+  font-size: 0.88rem;
+  margin-bottom: 4px;
+}
+.submit-label {
+  color: var(--muted-soft);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.submit-label .req { color: rgba(var(--accent-hot-rgb), 0.85); }
+.submit-modal input,
+.submit-modal textarea {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  color: var(--ink);
+  padding: 12px 14px;
+  border-radius: var(--r-input);
+  font-family: inherit;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.15s ease;
+}
+.submit-modal textarea {
+  resize: vertical;
+  min-height: 96px;
+  line-height: 1.45;
+  font-size: 0.95rem;
+}
+.submit-modal.tiny textarea {
+  min-height: 110px;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 14px 16px;
+}
+.submit-modal input:focus,
+.submit-modal textarea:focus { border-color: rgba(255,255,255,0.4); }
+.submit-send {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--ink);
+  color: var(--canvas);
+  border: none;
+  padding: 14px;
+  border-radius: var(--r-pill);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.submit-modal.tiny .submit-send {
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  margin-top: 0;
+  align-self: flex-end;
+}
+.submit-send:disabled { opacity: 0.4; cursor: not-allowed; }
+.submit-send:not(:disabled):hover { background: #f0f0f0; }
+.submit-foot {
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT: detail modal (poster + watch button)
+   Opens on movie/show/game card click. Poster sits above a colored
+   blur of itself for a subtle aura. Single Watch CTA at the bottom.
+   ───────────────────────────────────────────── */
+.detail-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 200;
+}
+.detail-center-wrap {
+  position: fixed; inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 210;
+  overflow-y: auto;
+}
+.detail-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(28, 28, 30, 0.92);
+  border: 1px solid var(--glass-border);
+  border-radius: 36px;
+  padding: 110px 22px 16px;
+  margin-top: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  -webkit-overflow-scrolling: touch;
+}
+.detail-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 30px; height: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  z-index: 3;
+  transition: background 0.15s ease;
+}
+.detail-close:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* Drag handle — only rendered on touch devices. Mirrors the iOS sheet
+   affordance so users learn the modal is swipeable. */
+.detail-drag-handle {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  z-index: 3;
+  pointer-events: none;
+}
+
+.detail-poster-wrap {
+  position: relative;
+  width: 180px;
+  aspect-ratio: 2 / 3;
+  margin: -210px 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.detail-poster-glow {
+  position: absolute;
+  inset: -8%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(22px) saturate(150%);
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+}
+.detail-poster {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+}
+.detail-poster img,
+.detail-poster .poster-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail-badge {
+  width: 70px;
+  height: 70px;
+  z-index: 4;
+}
+
+.detail-meta-block {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+/* Generic full-width wrapper for sections that get the staggered fade-in.
+   GameMedia / PhotoStrip have width:100% on their root, but their motion
+   wrapper would otherwise shrink to content and let the strip overflow. */
+.meta-stagger-row {
+  width: 100%;
+  min-width: 0;
+}
+.detail-title {
+  font-family: var(--font-sans);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.detail-meta {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--muted-soft);
+  margin: 0;
+}
+.detail-notes {
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 6px 4px 0;
+  max-width: 340px;
+}
+.detail-providers {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.detail-provider-link {
+  display: inline-flex;
+  border-radius: 11px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.detail-provider-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.42);
+}
+.detail-providers img {
+  width: 48px; height: 48px;
+  border-radius: 11px;
+  object-fit: cover;
+  background: var(--pill-bg);
+  display: block;
+}
+.igdb-tile {
+  width: 48px; height: 48px;
+  border-radius: 11px;
+  background: #14143C;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+.tmdb-tile {
+  width: 48px; height: 48px;
+  border-radius: 11px;
+  background: #032541;
+  color: #01b4e4;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+/* ───── Game-only detail surfaces ───── */
+.detail-section-label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 6px;
+}
+.detail-platforms {
+  margin-top: 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+.detail-platform-row {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+}
+.detail-platform-row.is-scroll {
+  flex-wrap: nowrap;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  justify-content: flex-start;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+  /* Mask the row edges so chips look like they're tucking under the bezel
+     instead of getting clipped flat. */
+  mask-image: linear-gradient(to right, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+  /* Hide scrollbar — chip row scrolls invisibly. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.detail-platform-row.is-scroll::-webkit-scrollbar { display: none; }
+.detail-platform-row.is-scroll .platform-chip {
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+.platform-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.88);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.platform-chip img { display: block; }
+.store-chip:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.22);
+  color: #fff;
+}
+
+/* Legacy store-tile rule kept only so old cached pages don't break — new
+   markup uses .platform-chip.store-chip. */
+.store-tile {
+  width: 48px; height: 48px;
+  border-radius: 11px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.10);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.store-tile img { width: 100%; height: 100%; border-radius: 0; background: transparent; object-fit: contain; }
+
+.detail-rawg-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  color: rgba(255,255,255,0.72);
+  font-size: 0.78rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.detail-rawg-link:hover { color: #fff; }
+
+.game-specs {
+  width: 100%;
+  margin: 4px 0 0;
+  padding: 8px 12px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 8px;
+  row-gap: 3px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  font-size: 0.76rem;
+  text-align: left;
+}
+.game-specs dt {
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  align-self: center;
+  text-align: left;
+}
+.game-specs dd {
+  margin: 0;
+  color: rgba(255,255,255,0.92);
+  font-weight: 500;
+  align-self: center;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.mc-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.mc-good  { background: rgba(80, 180, 100, 0.22); color: #b6e6c1; }
+.mc-mixed { background: rgba(220, 180, 60, 0.22); color: #ffe1ad; }
+.mc-bad   { background: rgba(220, 80, 80, 0.22);  color: #ffb3b3; }
+
+.game-media {
+  width: 100%;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.game-media-hero {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.game-media-video-thumb {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: none;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s ease;
+}
+.game-media-video-thumb::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 100%);
+}
+.game-media-video-thumb:hover { transform: scale(1.01); }
+.game-media-play {
+  position: relative;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  color: #111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.game-media-video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+.game-media-shots {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 4px;
+}
+.game-media-shots::-webkit-scrollbar { height: 6px; }
+.game-media-shots::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 999px; }
+.game-media-shot {
+  flex: 0 0 auto;
+  width: 140px;
+  aspect-ratio: 16 / 9;
+  background-color: #0a0a0a;
+  background-size: cover;
+  background-position: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  scroll-snap-align: start;
+  transition: transform 0.18s ease;
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+}
+.game-media-shot:hover { transform: translateY(-2px); }
+
+/* PhotoStrip skeletons — shown while the TMDB call is in flight so the modal
+   stagger animates a placeholder strip instead of waiting for an empty slot
+   that pops in seconds later. Real photos fade in when they replace the
+   skeletons. */
+.game-media-shot.photo-skeleton {
+  background: linear-gradient(110deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.10) 50%,
+    rgba(255, 255, 255, 0.04) 75%);
+  background-size: 220% 100%;
+  animation: photoSkeletonShimmer 1.4s ease-in-out infinite;
+  cursor: default;
+  pointer-events: none;
+}
+.game-media-shot.photo-skeleton:hover { transform: none; }
+@keyframes photoSkeletonShimmer {
+  0%   { background-position: 220% 0; }
+  100% { background-position: -220% 0; }
+}
+.game-media-shot.photo-fade-in {
+  animation: photoFadeIn 0.36s ease-out;
+}
+@keyframes photoFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-media-shot.photo-skeleton { animation: none; }
+  .game-media-shot.photo-fade-in { animation: none; }
+}
+.game-media-shot.is-video::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 35%, rgba(0,0,0,0.5) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+}
+.game-media-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+.game-media-play-overlay::before {
+  content: '';
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+.game-media-play-overlay svg {
+  position: relative;
+  color: #111;
+}
+
+.lightbox-video {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  background: #000;
+  display: block;
+}
+
+/* ───── Screenshot lightbox ───── */
+.lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  animation: lightbox-fade 0.15s ease-out;
+}
+@keyframes lightbox-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  display: block;
+}
+.lightbox-btn {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #fff;
+  width: 44px; height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+.lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.05);
+}
+.lightbox-close { top: 18px; right: 18px; }
+.lightbox-prev  { left: 18px; }
+.lightbox-next  { right: 18px; }
+.lightbox-prev,
+.lightbox-next {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.lightbox-prev:hover,
+.lightbox-next:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+.lightbox-counter {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+@media (max-width: 640px) {
+  .lightbox-backdrop { padding: 16px; }
+  .lightbox-prev { left: 8px; }
+  .lightbox-next { right: 8px; }
+  .lightbox-btn { width: 38px; height: 38px; }
+}
+
+@media (max-width: 480px) {
+  .detail-modal { padding: 110px 18px 16px; border-radius: 36px; margin-top: 90px; }
+  .detail-poster-wrap { width: 170px; margin: -190px 0 18px; }
+  .detail-title { font-size: 1.05rem; }
+}
+
+.data-loading {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.78);
+  background: rgba(20, 20, 22, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.data-loading::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-top-color: rgba(255, 255, 255, 0.75);
+  animation: data-loading-spin 0.7s linear infinite;
+}
+
+@keyframes data-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Touch-only tap-target bumps. Coarse pointers (phone/tablet) get
+   larger hit areas — Apple's HIG recommends ≥44px, Material ≥48px.
+   Desktop hover keeps the smaller compact sizes.
+   ───────────────────────────────────────────────────────────── */
+@media (hover: none) {
+  .detail-close { width: 44px; height: 44px; top: 12px; right: 12px; }
+  .search-clear {
+    width: 32px;
+    height: 32px;
+    /* Larger hit slop without enlarging the visual: a transparent overlay
+       reaches out to a 44px target. */
+    position: relative;
+  }
+  .search-clear::before {
+    content: '';
+    position: absolute;
+    inset: 50% 50% 50% 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+  .copy-title-btn { padding: 10px; }
+  .lightbox-btn { width: 44px !important; height: 44px !important; }
+}

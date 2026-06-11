@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+    <title>Cut. — Johnvino's Favorites</title>
+    <meta name="description" content="This page didn't make the final reel." />
+    <meta name="robots" content="noindex" />
+    <script>
+      // SPA-route fallback for paths the React app handles client-side
+      // (e.g. /admin). Stash the original URL so index.html can restore it
+      // via history.replaceState, then send the browser to /. Real 404s fall
+      // through to the cinematic page below.
+      (function () {
+        var SPA_PREFIXES = ['/admin'];
+        var p = location.pathname;
+        var match = SPA_PREFIXES.some(function (pre) {
+          return p === pre || p === pre + '/' || p.indexOf(pre + '/') === 0;
+        });
+        if (match) {
+          sessionStorage.redirect = location.href;
+          location.replace('/');
+        }
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Anton&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        height: 100%;
+        background: #0a0a0a;
+        color: #fff;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      /* Top + bottom letterbox bars — cinematic framing */
+      body::before, body::after {
+        content: '';
+        position: fixed;
+        left: 0; right: 0;
+        height: 56px;
+        background: #000;
+        z-index: 1;
+      }
+      body::before { top: 0; box-shadow: 0 1px 0 rgba(255,255,255,0.04); }
+      body::after  { bottom: 0; box-shadow: 0 -1px 0 rgba(255,255,255,0.04); }
+
+      .stage {
+        max-width: 640px;
+        position: relative;
+        z-index: 2;
+      }
+      .slate {
+        font-size: 11px;
+        letter-spacing: 0.32em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        margin-bottom: 18px;
+        font-weight: 500;
+      }
+      .slate .dot {
+        display: inline-block;
+        width: 6px; height: 6px;
+        background: rgba(255, 90, 70, 0.95);
+        border-radius: 50%;
+        margin-right: 10px;
+        vertical-align: middle;
+        animation: blink 1.4s ease-in-out infinite;
+      }
+      @keyframes blink { 0%, 100% { opacity: 1 } 50% { opacity: 0.25 } }
+
+      h1 {
+        font-family: 'Anton', 'Inter', sans-serif;
+        font-size: clamp(96px, 22vw, 220px);
+        line-height: 0.9;
+        letter-spacing: 0.02em;
+        font-weight: 400;
+        color: #fff;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 14px;
+      }
+      h1::after {
+        content: '';
+        position: absolute;
+        left: 0; right: 0;
+        bottom: 0;
+        height: 4px;
+        background: rgba(255, 90, 70, 0.95);
+        border-radius: 2px;
+      }
+
+      .tagline {
+        margin-top: 28px;
+        font-size: clamp(14px, 2.4vw, 17px);
+        color: rgba(255,255,255,0.72);
+        letter-spacing: -0.005em;
+        line-height: 1.5;
+      }
+      .tagline em { color: #fff; font-style: normal; font-weight: 600; }
+
+      .home {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 36px;
+        padding: 12px 22px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.14);
+        color: #fff;
+        font-family: inherit;
+        font-size: 0.92rem;
+        font-weight: 500;
+        text-decoration: none;
+        border-radius: 999px;
+        transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+      }
+      .home:hover {
+        background: rgba(255,255,255,0.10);
+        border-color: rgba(255,255,255,0.26);
+        transform: translateY(-1px);
+      }
+      .home:focus-visible {
+        outline: 2px solid rgba(255,255,255,0.8);
+        outline-offset: 3px;
+      }
+      .home svg { display: block; }
+
+      .reel {
+        position: fixed;
+        bottom: 14px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 10px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.32);
+        z-index: 3;
+        white-space: nowrap;
+      }
+      @media (max-width: 480px) {
+        body::before, body::after { height: 36px; }
+        .reel { font-size: 9px; letter-spacing: 0.3em; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage">
+      <p class="slate"><span class="dot"></span>Scene 404 · Take 1</p>
+      <h1>Cut.</h1>
+      <p class="tagline">
+        This page didn't make the <em>final reel</em>.<br />
+        But there's plenty more in the collection.
+      </p>
+      <a class="home" href="/">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/>
+        </svg>
+        Back to Favorites
+      </a>
+    </main>
+    <p class="reel">Reel 1 · Johnvino's Favorites</p>
+  </body>
+</html>

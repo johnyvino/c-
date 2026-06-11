@@ -1,0 +1,174 @@
+/* ─────────────────────────────────────────────────────────────
+   FERRARI-INSPIRED DESIGN TOKENS
+   - Near-black canvas (#181818) — never pure black
+   - Rosso Corsa #da291c as the single accent, used scarcely
+   - Inter as the single sans family (FerrariSans substitute)
+   - Spacing on 4/8/16/24/32/48/64/96 ladder
+   - Radii: KEEP rounded — user prefers pill/card corners
+   ───────────────────────────────────────────────────────────── */
+:root {
+  /* Surface */
+  --canvas:           #181818;
+  --canvas-elevated:  #303030;
+  --canvas-light:     #ffffff;
+  --hairline:         #303030;
+  --hairline-soft:    #262626;
+
+  /* Text */
+  --ink:           #ffffff;
+  --body:          #969696;
+  --body-strong:   #ffffff;
+  --muted:         #666666;
+  --muted-soft:    #8f8f8f;
+
+  /* Brand accent — Rosso Corsa. Reserved for active states, dice/random,
+     and Amazing-tier badges. Never decorative. */
+  --primary:        #da291c;
+  --primary-active: #b01e0a;
+  --on-primary:     #ffffff;
+
+  /* Hot coral accent — used for decorative brand highlights (title underline,
+     footer signature, required-field markers). Distinct from --primary so the
+     "reserved for active states" rule above stays clean.
+     Stored as raw RGB triplets so rgba(var(--accent-hot-rgb), <alpha>) works. */
+  --accent-hot-rgb: 255, 90, 70;
+
+  /* Legacy aliases so existing selectors continue to work */
+  --bg-color:        var(--canvas);
+  --card-bg:         var(--canvas-elevated);
+  --text-primary:    var(--ink);
+  --text-secondary:  var(--body);
+  --accent:          var(--primary);
+  --rating-color:    var(--ink);
+
+  /* Typography — single family, Inter (FerrariSans substitute) */
+  --font-sans:    'Inter', -apple-system, system-ui, sans-serif;
+  --font-heading: var(--font-sans);
+  --font-serif:   var(--font-sans);   /* no serif in Ferrari system */
+  --font-mono:    var(--font-sans);   /* mono retired — labels use uppercase Inter */
+
+  /* Radii — user preference: rounded pills + cards stay */
+  --r-pill:  9999px;
+  --r-input: 12px;
+  --r-card:  16px;
+  --r-sm:    8px;
+
+  /* Surface treatments. Glass kept for select surfaces; sidebar moves to a
+     near-black opaque surface (canvas-elevated) per Ferrari guidance. */
+  --glass-bg:     rgba(255, 255, 255, 0.06);
+  --glass-bg-2:   rgba(255, 255, 255, 0.10);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-blur:   blur(40px) saturate(180%);
+
+  --pill-bg:        rgba(255, 255, 255, 0.06);
+  --pill-bg-hover:  rgba(255, 255, 255, 0.12);
+  --pill-border:    rgba(255, 255, 255, 0.10);
+  --pill-blur:      blur(18px);
+
+  /* Active treatment is Rosso Corsa now, not white */
+  --active-bg:     var(--primary);
+  --active-fg:     var(--on-primary);
+  --active-shadow: 0 4px 14px rgba(218, 41, 28, 0.30);
+
+  /* Spacing — Ferrari ladder. Eight steps (4/8/16/24/32/48/64) but indexed 1–9
+     with two aliases so existing call sites don't break:
+       --space-1  4px
+       --space-2  8px
+       --space-3  8px   (alias for chip gaps that historically used "3")
+       --space-4 16px
+       --space-5 16px   (alias for legacy "5" — same as --space-4)
+       --space-6 24px
+       --space-7 32px
+       --space-8 48px
+       --space-9 64px
+     New code should prefer --space-2 over --space-3 and --space-4 over
+     --space-5 — the aliases stay so a global rename isn't required. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 8px;
+  --space-4: 16px;
+  --space-5: 16px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 48px;
+  --space-9: 64px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Motion durations — referenced as --duration-fast/base/slow throughout. */
+  --duration-fast: 0.18s;
+  --duration-base: 0.25s;
+  --duration-slow: 0.4s;
+}
+
+/* Metrics-matched fallback for Anton (display title). Until Anton lands from
+   Google Fonts, this synthetic family wraps Impact with size-adjust + ascent
+   overrides so the title's vertical box and visual height closely match
+   Anton's — the swap-in at load time barely shifts the layout instead of
+   reflowing 15% as plain Impact would. Numbers from Capsize-style metric
+   matching against Anton (UPM 1000: ascent 1037, descent 271). */
+@font-face {
+  font-family: 'Anton-fallback';
+  src: local('Impact'), local('Bebas Neue'), local('Arial Narrow Bold');
+  size-adjust: 90%;
+  ascent-override: 100%;
+  descent-override: 27%;
+  line-gap-override: 0%;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--body);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* dvh accounts for the iOS Safari URL bar (vh treats it as collapsed even
+     when expanded, so content gets clipped at the bottom). vh is the fallback
+     for browsers without dvh. */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Display headlines — Inter 500 (never bold). Negative tracking on display only. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-style: normal;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.tab-num, .type-count, .filter-value {
+  font-variant-numeric: tabular-nums;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Respect user's reduced-motion preference — disable card stagger, hover
+   lifts, spring transitions, sheet slide-in. Keep opacity for clarity. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

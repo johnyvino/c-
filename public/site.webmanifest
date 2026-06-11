@@ -1,0 +1,14 @@
+{
+  "name": "Johnvino's Favorites",
+  "short_name": "JV Favorites",
+  "description": "Movies, shows, and games hand-picked by Johnvino.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

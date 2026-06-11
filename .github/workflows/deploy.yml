@@ -1,0 +1,92 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly: Mondays 06:00 UTC. Refreshes streaming providers, scores, and
+    # cast/crew so movies.json never goes more than a week stale.
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Persist the TMDB/Watchmode response cache between runs so the weekly
+      # refresh is mostly cache hits instead of ~250 API calls.
+      - name: Restore enrichment cache
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: actions/cache@v4
+        with:
+          path: scripts/.cache
+          key: enrich-cache-v1
+
+      - run: npm install
+
+      # Skip the live API bake on code-only push events — movies.json on disk
+      # is already the source of truth. The enrich step only runs on the weekly
+      # cron and manual dispatches, where a refreshed dataset is the goal.
+      - name: Bake TMDB + Watchmode data into movies.json
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: npm run enrich-static
+        env:
+          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
+          VITE_WATCHMODE_API_KEY: ${{ secrets.VITE_WATCHMODE_API_KEY }}
+
+      # Commit the refreshed movies.json so future code-only pushes start from
+      # fresh data. Only fires on the weekly cron / manual run — push events
+      # skip this step (avoids self-loops and keeps code-push diffs clean).
+      - name: Commit refreshed data
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: |
+          if ! git diff --quiet src/data/movies.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email 'github-actions[bot]@users.noreply.github.com'
+            git add src/data/movies.json
+            git commit -m "refresh data"
+            git push
+          else
+            echo "movies.json unchanged — nothing to commit"
+          fi
+
+      - run: npm run build
+        env:
+          # TMDB + Watchmode keys are inlined into the public bundle so the
+          # DetailModal can fetch live providers/cast/photos on open. Both are
+          # public-by-design (TMDB v3 read-only, Watchmode 1k/mo). Treat as
+          # usage-restricted, not secret.
+          VITE_TMDB_API_KEY: ${{ secrets.VITE_TMDB_API_KEY }}
+          VITE_WATCHMODE_API_KEY: ${{ secrets.VITE_WATCHMODE_API_KEY }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

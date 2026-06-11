@@ -1,0 +1,41 @@
+{
+  "name": "johnvinos-favorites",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "data": "node --env-file=.env.local scripts/build-data.mjs",
+    "add": "node --env-file=.env.local scripts/add-by-tmdb.mjs",
+    "add-titles": "node --env-file=.env.local scripts/add-titles.mjs",
+    "mark-twists": "node --env-file=.env.local scripts/mark-twists.mjs",
+    "resize-posters": "node --env-file=.env.local scripts/resize-posters.mjs",
+    "fetch-game-posters": "node --env-file=.env.local scripts/fetch-game-posters.mjs",
+    "sync-games": "node --env-file=.env.local scripts/rebuild-games-from-rawg.mjs",
+    "add-game": "node --env-file=.env.local scripts/add-rawg.mjs",
+    "enrich-credits": "node --env-file=.env.local scripts/enrich-credits.mjs",
+    "enrich-static": "node --env-file-if-exists=.env.local scripts/enrich-static.mjs",
+    "fetch-vertical-posters": "node scripts/fetch-vertical-posters.mjs",
+    "fetch-grids-steamgriddb": "node --env-file=.env.local scripts/fetch-grids-steamgriddb.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "motion": "^11.15.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "vite": "^6.0.0"
+  }
+}
