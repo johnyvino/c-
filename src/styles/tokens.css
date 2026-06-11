@@ -138,6 +138,10 @@ body {
      for browsers without dvh. */
   min-height: 100vh;
   min-height: 100dvh;
+  /* iOS Safari pull-to-refresh fires when a downward swipe lands at the top
+     of the document. Swipe-to-dismiss on DetailModal unmounts mid-gesture,
+     and the continuing finger drag triggers a full page reload. */
+  overscroll-behavior-y: none;
 }
 
 /* Display headlines — Inter 500 (never bold). Negative tracking on display only. */
