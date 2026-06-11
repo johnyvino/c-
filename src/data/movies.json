@@ -12854,5 +12854,65 @@
     "metacritic": 94,
     "playtime": 15,
     "posterVertical": "/posters/god-of-war-2-vertical.jpg"
+  },
+  {
+    "id": "game-super-mario",
+    "slug": "super-mario",
+    "title": "Super mario(itch)",
+    "originalTitle": "Super mario(itch)",
+    "year": 2018,
+    "type": "game",
+    "poster": "https://media.rawg.io/media/screenshots/2d8/2d85b588d329dc747f2d0a34506f3633.jpg",
+    "genres": [
+      "Platformer"
+    ],
+    "language": null,
+    "runtime": null,
+    "seasons": null,
+    "episodes": null,
+    "overview": "This is the original mario brothers except its written in jar",
+    "ratings": {
+      "tmdb": null,
+      "voteCount": 10,
+      "personal": null
+    },
+    "popularity": 19,
+    "tmdbId": null,
+    "detailsUrl": "https://rawg.io/games/super-mario",
+    "twist": false,
+    "scary": false,
+    "intense": false,
+    "mindbending": false,
+    "clever": false
+  },
+  {
+    "id": "movie-project-hail-mary-2026",
+    "slug": "project-hail-mary-2026",
+    "title": "Project Hail Mary",
+    "originalTitle": "Project Hail Mary",
+    "year": 2026,
+    "type": "movie",
+    "poster": "https://image.tmdb.org/t/p/w342/yihdXomYb5kTeSivtFndMy5iDmf.jpg",
+    "genres": [
+      "Science Fiction",
+      "Adventure"
+    ],
+    "language": "English",
+    "runtime": 157,
+    "seasons": null,
+    "episodes": null,
+    "overview": "Science teacher Ryland Grace wakes up on a spaceship light years from home with no recollection of who he is or how he got there. As his memory returns, he begins to uncover his mission: solve the riddle of the mysterious substance causing the sun to die out. He must call on his scientific knowledge and unorthodox ideas to save everything on Earth from extinction.",
+    "ratings": {
+      "tmdb": 8.7,
+      "voteCount": 4866,
+      "personal": null
+    },
+    "popularity": 198.4691,
+    "tmdbId": 687163,
+    "twist": false,
+    "scary": false,
+    "intense": false,
+    "mindbending": false,
+    "clever": false
   }
 ]
