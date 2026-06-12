@@ -151,6 +151,11 @@ export default function App() {
   }, [activeTab, debouncedQuery, years, genres, languages, platforms, myScoreTier, moviesData]);
 
   const hasActive = !!(query || years.length || genres.length || languages.length || platforms.length || myScoreTier > 0);
+  // FAB dot is a "filters applied" indicator — search is now a sibling row
+  // on mobile (not inside the sheet), so a typed query shouldn't paint the
+  // dot. Keep `hasActive` (includes query) for the Clear-all visibility,
+  // which legitimately resets the whole state.
+  const hasActiveFilters = !!(years.length || genres.length || languages.length || platforms.length || myScoreTier > 0);
 
   const onClear = useCallback(() => {
     setQuery(''); setYears([]); setGenres([]); setLanguages([]); setPlatforms([]); setMyScoreTier(0);
@@ -228,7 +233,7 @@ export default function App() {
       </div>
 
       <motion.button
-        className={`mobile-filter-fab ${hasActive ? 'has-active' : ''}`}
+        className={`mobile-filter-fab ${hasActiveFilters ? 'has-active' : ''}`}
         onClick={() => setSheetOpen(true)}
         aria-label="Open filters"
         animate={{ rotate: sheetOpen ? 90 : 0 }}
