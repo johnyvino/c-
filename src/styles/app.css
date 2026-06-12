@@ -1816,6 +1816,20 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
     will-change: auto !important;
   }
   .movie-card { will-change: auto !important; }
+  /* iOS Safari 17.4+ honors content-visibility: auto. Tells WebKit to skip
+     rendering, painting, AND image-decoding for cards outside (viewport
+     + ~50vh). With ~230 cards in the grid, that takes the actively-rendered
+     count from "all of them" down to whatever fits in roughly two screen
+     heights (~10–15 cards). Massive drop in baseline image-cache and
+     compositing cost — which is what was leaving no headroom for the
+     modal's own allocations.
+     contain-intrinsic-size reserves space so the scroll height is correct
+     before WebKit has measured a card; the `auto` keyword lets it record
+     the real size after first measurement and reuse it for siblings. */
+  .movie-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
+  }
   /* Card demotion alone got us ~6 modals before a kill, up from ~1 — but
      each modal still pushes another big GPU layer into the budget. Two
      touch-only relaxations that don't change how the modal looks on a
