@@ -77,13 +77,6 @@ const InflatingTitle = () => {
 
 export const HeroBanner = ({ activeTab, onTabChange, counts, onRecommend }) => (
   <div className="hero-banner">
-    {/* Pure-CSS aurora — three blurred Rosso/indigo/blue orbs drifting on
-        slow keyframes. Hidden on touch to keep mobile's GPU budget intact. */}
-    <div className="hero-aurora" aria-hidden="true">
-      <span className="aurora-orb orb-1" />
-      <span className="aurora-orb orb-2" />
-      <span className="aurora-orb orb-3" />
-    </div>
     <div className="hero-content-wrap">
       <div className="header-content">
         <div className="header-top-row">
