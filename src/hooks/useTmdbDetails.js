@@ -3,6 +3,15 @@ import { TMDB_API_KEY, TMDB_BASE } from '../lib/tmdbKey';
 import { pickWatchRegion, dedupeProviders, mergeWatchmodeIntoProviders } from '../lib/tmdb';
 import { fetchWatchmodeSources, WATCHMODE_TYPE_PRIORITY } from '../lib/watchmode';
 
+// Touch screens can't visually distinguish a 780px backdrop from a 500px one
+// at the photo-strip size — but the decoded RGBA difference is ~40 % per
+// image, which adds up across the 6 we keep around per modal. Keep the
+// higher-res variants for desktop where the lightbox upscales them.
+const TMDB_PHOTO_WIDTH = (typeof window !== 'undefined'
+  && window.matchMedia?.('(hover: none), (pointer: coarse)').matches)
+  ? 'w500'
+  : 'w780';
+
 const EMPTY = {
   providers: [],
   director: null,
@@ -98,7 +107,7 @@ const pickDiversePhotos = (backdrops, n = 6) => {
   const textFree = backdrops.filter((b) => !b.iso_639_1);
   const pool = textFree.length >= n ? textFree : backdrops;
   if (pool.length <= n) {
-    return pool.map((b) => `https://image.tmdb.org/t/p/w780${b.file_path}`);
+    return pool.map((b) => `https://image.tmdb.org/t/p/${TMDB_PHOTO_WIDTH}${b.file_path}`);
   }
   // Stride-sample. e.g. pool of 30 picking 6 → indices 0, 5, 10, 15, 20, 25.
   const stride = pool.length / n;
@@ -106,5 +115,5 @@ const pickDiversePhotos = (backdrops, n = 6) => {
   for (let i = 0; i < n; i++) {
     picks.push(pool[Math.floor(i * stride)]);
   }
-  return picks.map((b) => `https://image.tmdb.org/t/p/w780${b.file_path}`);
+  return picks.map((b) => `https://image.tmdb.org/t/p/${TMDB_PHOTO_WIDTH}${b.file_path}`);
 };
