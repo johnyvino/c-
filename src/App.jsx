@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SlidersHorizontal } from 'lucide-react';
 import './styles/tokens.css';
@@ -85,6 +85,37 @@ export default function App() {
 
   const [gridRef, columns] = useGridColumns(5, activeTab);
   useBodyScrollLock(sheetOpen);
+
+  // Mobile search transform: when the user scrolls past the in-flow search
+  // row, it collapses to a circular icon button on the right (mirroring the
+  // filter FAB on the left). Tapping the icon expands it back; scrolling
+  // back to the top auto-collapses to the in-flow row.
+  const [searchStuck, setSearchStuck] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
+  const searchSentinelRef = useRef(null);
+  const searchInputRef = useRef(null);
+  useEffect(() => {
+    const el = searchSentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        const stuck = !entry.isIntersecting;
+        setSearchStuck(stuck);
+        if (!stuck) setSearchExpanded(false);
+      },
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  const onSearchTriggerClick = useCallback(() => {
+    if (searchStuck && !searchExpanded) {
+      setSearchExpanded(true);
+      // Defer focus until the expand transition has started so iOS doesn't
+      // jump-scroll to put a still-collapsed input into view.
+      requestAnimationFrame(() => searchInputRef.current?.focus());
+    }
+  }, [searchStuck, searchExpanded]);
 
   // Per-card lift+stagger entrance should only fire on tab switches, not on
   // every filter chip tap (otherwise filtering feels like the tab just opened).
@@ -194,11 +225,17 @@ export default function App() {
         onRecommend={() => setSubmitOpen(true)}
       />
 
-      <div className="mobile-search-bar">
+      <div ref={searchSentinelRef} className="mobile-search-sentinel" aria-hidden="true" />
+      <div
+        className={`mobile-search-bar ${searchStuck ? 'is-stuck' : ''} ${searchExpanded ? 'is-expanded' : ''}`}
+        onClick={onSearchTriggerClick}
+      >
         <SearchBox
           value={query}
           onChange={setQuery}
           placeholder={`Search ${activeTab.toLowerCase()}…`}
+          inputRef={searchInputRef}
+          onBlur={() => setSearchExpanded(false)}
         />
       </div>
 

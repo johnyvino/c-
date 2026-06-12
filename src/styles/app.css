@@ -873,13 +873,54 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
   .mobile-search-bar {
     /* Breathing room between the tabs row and the search row. */
     margin-top: var(--space-4);
+    /* Sticky behavior + scroll-driven morph: when the sentinel above
+       scrolls out of view, JS adds .is-stuck and the bar transforms into
+       a circular FAB on the right (mirroring .mobile-filter-fab on the
+       left). Tapping it sets .is-expanded which expands it back to a
+       full-width pill anchored at the top of the viewport. */
+    position: sticky;
+    top: calc(env(safe-area-inset-top, 0) + var(--space-2));
+    z-index: 40;
+    transition: padding 0.25s ease, background 0.25s ease;
   }
   .mobile-search-bar .glass-search {
     height: 48px;
     padding: 0 var(--space-4);
     box-sizing: border-box;
+    transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                margin-left 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+                padding 0.25s ease;
   }
   .mobile-search-bar .glass-search input { font-size: 16px; }
+
+  /* ── stuck (icon-only on the right) ── */
+  .mobile-search-bar.is-stuck { background: transparent; }
+  .mobile-search-bar.is-stuck .glass-search {
+    width: 48px;
+    margin-left: auto;
+    padding: 0;
+    justify-content: center;
+    cursor: pointer;
+    background: var(--canvas-elevated);
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+  .mobile-search-bar.is-stuck .glass-search input,
+  .mobile-search-bar.is-stuck .glass-search .search-clear {
+    display: none;
+  }
+
+  /* ── expanded (full-width again, on top) ── */
+  .mobile-search-bar.is-expanded { background: transparent; }
+  .mobile-search-bar.is-expanded .glass-search {
+    width: 100%;
+    margin-left: 0;
+    padding: 0 var(--space-4);
+  }
+
+  /* Sentinel: a 1 px element above the sticky bar that the IntersectionObserver
+     watches. When it exits the viewport, we know the user scrolled past it. */
+  .mobile-search-sentinel { height: 1px; width: 100%; }
   /* Hide the inline sidebar only — NOT the copy inside .sheet */
   .layout > .glass-sidebar { display: none; }
   .mobile-filter-fab {
