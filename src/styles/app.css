@@ -850,14 +850,15 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
     margin: 0 auto var(--space-4);
     padding: 0 var(--space-4);
   }
+  /* .header-content is a flex column with align-items:flex-start, so its
+     children (including the motion.div that wraps HeaderTabs) only take
+     their natural width — that's why the tabs pill wasn't spanning the
+     full content frame on mobile. Force every child to stretch on touch
+     viewports so the tabs row matches the search row below it. */
+  .header-content > * { width: 100%; }
   /* Pin BOTH the tabs pill and the search pill to the same 48 px height
      (a clean step on the 4/8/16/24/32/48 spacing ladder, also Apple HIG
-     touch target). Tabs pill height was driven by the tab button's padding
-     (10 px) + 0.7 rem text — coming out around 45 px. Search pill was
-     driven by the input's 16 px font (anti-zoom) + 8 px padding — around
-     48 px. Locking heights explicitly removes the off-by-3 px mismatch the
-     user flagged in screenshots, and keeps the two rows reading as a
-     paired stack regardless of font/line-height drift. */
+     touch target). */
   .header-tabs {
     height: 48px;
     padding: 4px;
@@ -868,6 +869,10 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
     padding: 0 var(--space-4);
     display: inline-flex;
     align-items: center;
+  }
+  .mobile-search-bar {
+    /* Breathing room between the tabs row and the search row. */
+    margin-top: var(--space-4);
   }
   .mobile-search-bar .glass-search {
     height: 48px;
