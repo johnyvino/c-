@@ -25,7 +25,7 @@ export const MobileFilterSheet = ({ onClose, ...sidebarProps }) => (
         <h2 className="sheet-title">Filters</h2>
         <button className="sheet-apply" onClick={onClose}>Apply</button>
       </div>
-      <FilterSidebar {...sidebarProps} hideClearAll />
+      <FilterSidebar {...sidebarProps} hideClearAll hideSearch />
     </motion.div>
   </>
 );

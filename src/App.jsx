@@ -19,6 +19,7 @@ import { Footer } from './components/Footer';
 import { HeroBanner } from './components/HeroBanner';
 import { MobileFilterSheet } from './components/MobileFilterSheet';
 import { MovieCard } from './components/MovieCard';
+import { SearchBox } from './components/SearchBox';
 import { SubmitModal } from './components/SubmitModal';
 
 // Build the chip facets for the current tab. Genres: ≥3 titles, top 10 by count.
@@ -187,6 +188,14 @@ export default function App() {
         onTabChange={handleTabSwitch}
         onRecommend={() => setSubmitOpen(true)}
       />
+
+      <div className="mobile-search-bar">
+        <SearchBox
+          value={query}
+          onChange={setQuery}
+          placeholder={`Search ${activeTab.toLowerCase()}…`}
+        />
+      </div>
 
       <div className="layout">
         <main className="main-content">

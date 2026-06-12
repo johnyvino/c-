@@ -832,10 +832,22 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
 
 /* ───── Mobile: sidebar → bottom sheet ───── */
 .mobile-filter-fab { display: none; }
+.mobile-search-bar { display: none; }
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: 1fr;
     padding: var(--space-5);
+  }
+  /* Search promoted out of the (sheet-hidden) sidebar to its own row right
+     under the tabs, so phone users can search without opening the filter
+     sheet. The .glass-search input styling already handles its appearance. */
+  .mobile-search-bar {
+    display: block;
+    padding: 0 var(--space-5);
+    margin: var(--space-2) 0 var(--space-4);
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
   }
   /* Hide the inline sidebar only — NOT the copy inside .sheet */
   .layout > .glass-sidebar { display: none; }

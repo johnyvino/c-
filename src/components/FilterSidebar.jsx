@@ -17,19 +17,22 @@ export const FilterSidebar = ({
   hasActive,
   activeTab,
   hideClearAll = false,
+  hideSearch = false,
 }) => {
   const availableDecades = DECADE_DISPLAY_ORDER.filter((d) => facets.years.includes(d));
 
   return (
     <aside className="glass-sidebar">
       <div className="sidebar-inner">
-        <div className="filter-section first">
-          <SearchBox
-            value={query}
-            onChange={setQuery}
-            placeholder={`Search ${activeTab.toLowerCase()}…`}
-          />
-        </div>
+        {!hideSearch && (
+          <div className="filter-section first">
+            <SearchBox
+              value={query}
+              onChange={setQuery}
+              placeholder={`Search ${activeTab.toLowerCase()}…`}
+            />
+          </div>
+        )}
 
         <div className="filter-section">
           <h4 className="filter-label">Johnyvino Score</h4>
