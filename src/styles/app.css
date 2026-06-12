@@ -740,11 +740,13 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
      as "too tall" because mask softens the edge over a long fade. With
      bottom-anchored auto-height the blur only exists where the notes
      visually live; a short mask just softens the top edge of THAT,
-     not a fraction of the whole poster. */
+     not a fraction of the whole poster. Top padding is generous so the
+     blur has a calm band of breathing room above the notes — too tight
+     reads as a label slapped on the poster. */
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  -webkit-mask-image: linear-gradient(to top, black 60%, transparent 100%);
-  mask-image: linear-gradient(to top, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to top, black 55%, transparent 100%);
+  mask-image: linear-gradient(to top, black 55%, transparent 100%);
   backdrop-filter: blur(14px) saturate(115%);
   -webkit-backdrop-filter: blur(14px) saturate(115%);
   background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
@@ -752,7 +754,7 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
   transition: opacity 0.3s ease;
   display: flex; flex-direction: column;
   gap: 8px;
-  padding: var(--space-4);
+  padding: var(--space-7) var(--space-4) var(--space-4);
 }
 .movie-card:hover .poster-overlay { opacity: 1; }
 /* Games use a hover screenshot cycle instead — overlay would conflict. */
