@@ -881,6 +881,10 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
     box-sizing: border-box;
   }
   .mobile-search-bar .glass-search input { font-size: 16px; }
+  /* Tracks whether the user is near the top: while this 1 px sentinel is
+     visible (i.e. before the search row has scrolled out of view) the
+     search FAB is hidden so we don't show two search affordances at once. */
+  .mobile-search-sentinel { height: 1px; width: 100%; }
   /* Hide the inline sidebar only — NOT the copy inside .sheet */
   .layout > .glass-sidebar { display: none; }
   .mobile-filter-fab {

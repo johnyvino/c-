@@ -88,13 +88,24 @@ export default function App() {
 
   // Mobile-only "back to search" FAB at the bottom-right (mirrors the
   // filter FAB on the bottom-left). Tapping it scrolls back to the top
-  // and focuses the search input.
+  // and focuses the search input. Only visible after the user has
+  // scrolled past the in-flow search row — otherwise both UIs would show
+  // at once.
   const searchInputRef = useRef(null);
+  const searchSentinelRef = useRef(null);
+  const [searchFabVisible, setSearchFabVisible] = useState(false);
+  useEffect(() => {
+    const el = searchSentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setSearchFabVisible(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const onSearchFabTap = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    // Defer focus until the scroll is at least starting; iOS handles the
-    // smooth-scroll synchronously for short distances so a single rAF is
-    // enough — no setTimeout dance.
     requestAnimationFrame(() => searchInputRef.current?.focus());
   }, []);
 
@@ -214,6 +225,10 @@ export default function App() {
           inputRef={searchInputRef}
         />
       </div>
+      {/* Sentinel placed right below the in-flow search row. While visible,
+          the user is near the top and doesn't need the FAB. Once it scrolls
+          out of view, the FAB fades in. */}
+      <div ref={searchSentinelRef} className="mobile-search-sentinel" aria-hidden="true" />
 
       <div className="layout">
         <main className="main-content">
@@ -257,18 +272,23 @@ export default function App() {
         <SlidersHorizontal size={20} />
       </motion.button>
 
-      <motion.button
-        className="mobile-search-fab"
-        onClick={onSearchFabTap}
-        aria-label="Search"
-        whileHover={{ scale: 1.06, y: -2 }}
-        whileTap={{ scale: 0.9 }}
-        transition={{ type: 'spring', stiffness: 420, damping: 24 }}
-      >
-        <Search size={20} />
-      </motion.button>
-
       <AnimatePresence>
+        {searchFabVisible && (
+          <motion.button
+            key="search-fab"
+            className="mobile-search-fab"
+            onClick={onSearchFabTap}
+            aria-label="Search"
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            whileHover={{ scale: 1.06, y: -2 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+          >
+            <Search size={20} />
+          </motion.button>
+        )}
         {sheetOpen && <MobileFilterSheet key="sheet" {...sidebarProps} onClose={() => setSheetOpen(false)} />}
         {submitOpen && <SubmitModal key="submit" onClose={() => setSubmitOpen(false)} />}
         {selectedMovie && <DetailModal key="detail" movie={selectedMovie} onClose={closeMovie} />}
