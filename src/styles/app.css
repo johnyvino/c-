@@ -733,20 +733,24 @@ body.is-modal-open .rating-badge.tier-amazing::before { animation-play-state: pa
    bottom, instead of being a solid black wash. A faint dark gradient on top
    keeps the notes readable without dimming the poster. */
 .poster-overlay {
-  position: absolute; inset: 0;
-  /* Tightened mask: bottom 30 % is fully opaque (the notes area), the
-     blur fades to zero by 38 % from the bottom. Previous range
-     (30 %–60 %) extended the blur band over half the poster, which the
-     user flagged as too tall — we want the blur to hug the notes line
-     clamp (≈6 lines, ~30 % of the poster height) and stop. */
-  -webkit-mask-image: linear-gradient(to top, black 30%, transparent 38%);
-  mask-image: linear-gradient(to top, black 30%, transparent 38%);
+  /* Anchor to the bottom and size to content (notes + padding) instead
+     of covering the full poster. Previously this used inset:0 + a
+     mask-image to clip the blur to the bottom band — but backdrop-filter
+     still ran over the whole poster, and the user kept reading the band
+     as "too tall" because mask softens the edge over a long fade. With
+     bottom-anchored auto-height the blur only exists where the notes
+     visually live; a short mask just softens the top edge of THAT,
+     not a fraction of the whole poster. */
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  -webkit-mask-image: linear-gradient(to top, black 60%, transparent 100%);
+  mask-image: linear-gradient(to top, black 60%, transparent 100%);
   backdrop-filter: blur(14px) saturate(115%);
   -webkit-backdrop-filter: blur(14px) saturate(115%);
-  background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 28%, rgba(0,0,0,0) 38%);
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0));
   opacity: 0;
   transition: opacity 0.3s ease;
-  display: flex; flex-direction: column; justify-content: flex-end;
+  display: flex; flex-direction: column;
   gap: 8px;
   padding: var(--space-4);
 }
