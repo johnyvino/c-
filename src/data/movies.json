@@ -20,7 +20,7 @@
     "ratings": {
       "tmdb": 8.9,
       "voteCount": 17860,
-      "personal": 8.9
+      "personal": 9.2
     },
     "popularity": 151.1379,
     "tmdbId": 1396,
@@ -28,8 +28,8 @@
     "scary": false,
     "intense": false,
     "mindbending": false,
-    "clever": false,
-    "mustsee": true,
+    "clever": true,
+    "mustsee": false,
     "notes": "walt dropping the mr white voice and becoming heisenberg, paced perfectly",
     "cast": [
       "Bryan Cranston",
@@ -225,7 +225,7 @@
     "ratings": {
       "tmdb": 8.3,
       "voteCount": 6205,
-      "personal": 8.6
+      "personal": 9.2
     },
     "popularity": 55.4905,
     "tmdbId": 42009,
